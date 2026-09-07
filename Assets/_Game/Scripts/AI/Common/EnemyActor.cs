@@ -102,9 +102,7 @@ public class EnemyActor : MonoBehaviour
         animator.SetTrigger("Attack");
     }
 
-    private void HandleDamaged(
-        float currentHealth,
-        float maxHealth)
+    private void HandleDamaged(int amount)
     {
         if (animator == null || IsDead)
         {
