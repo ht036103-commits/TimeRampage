@@ -19,15 +19,38 @@ public class GroundEnemyMotor : MonoBehaviour
     private Vector3 currentHorizontalVelocity;
     private bool movementEnabled = true;
 
+    private float desiredSpeed;
+    private float facingDirection = 1f;
+
+    public float FacingDirection => facingDirection;
+
+    public void Move(float direction, float speed)
+    {
+        if (!movementEnabled)
+        {
+            desiredDirection = Vector3.zero;
+            return;
+        }
+
+        desiredDirection =
+            Vector3.right * Mathf.Sign(direction);
+
+        desiredSpeed = Mathf.Max(0f, speed);
+    }
+
     private void Awake()
     {
         body = GetComponent<Rigidbody>();
 
-        body.constraints =
+        body.constraints |=
+            RigidbodyConstraints.FreezePositionZ |
             RigidbodyConstraints.FreezeRotationX |
             RigidbodyConstraints.FreezeRotationZ;
 
-        body.interpolation = RigidbodyInterpolation.Interpolate;
+        body.interpolation =
+            RigidbodyInterpolation.Interpolate;
+
+        desiredSpeed = moveSpeed;
     }
 
     public void Move(Vector3 worldDirection)
@@ -46,9 +69,39 @@ public class GroundEnemyMotor : MonoBehaviour
                 : worldDirection;
     }
 
+    public void Face(float direction)
+    {
+        if (Mathf.Abs(direction) < 0.001f)
+        {
+            return;
+        }
+
+        facingDirection = Mathf.Sign(direction);
+    }
+
     public void Stop()
     {
         desiredDirection = Vector3.zero;
+        desiredSpeed = 0f;
+    }
+
+    public void StopImmediately()
+    {
+        desiredDirection = Vector3.zero;
+        currentHorizontalVelocity = Vector3.zero;
+
+        if (body == null || body.isKinematic)
+        {
+            return;
+        }
+
+        body.velocity = new Vector3(
+            0f,
+            body.velocity.y,
+            0f
+        );
+
+        CurrentSpeedNormalized = 0f;
     }
 
     public void SetMovementEnabled(bool value)
@@ -57,7 +110,7 @@ public class GroundEnemyMotor : MonoBehaviour
 
         if (!movementEnabled)
         {
-            Stop();
+            StopImmediately();
         }
     }
 
@@ -83,7 +136,7 @@ public class GroundEnemyMotor : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 targetVelocity =
-            desiredDirection.normalized * moveSpeed;
+            desiredDirection.normalized * desiredSpeed;
 
         currentHorizontalVelocity = Vector3.MoveTowards(
             currentHorizontalVelocity,
@@ -105,12 +158,12 @@ public class GroundEnemyMotor : MonoBehaviour
                 ? 0f
                 : currentHorizontalVelocity.magnitude / moveSpeed;
 
-        if (desiredDirection.sqrMagnitude > 0.001f)
+        if (Mathf.Abs(facingDirection) > 0.001f)
         {
             Quaternion targetRotation =
-                Quaternion.LookRotation(
-                    desiredDirection.normalized
-                );
+                facingDirection > 0f
+                    ? Quaternion.identity
+                    : Quaternion.Euler(0f, 180f, 0f);
 
             body.MoveRotation(
                 Quaternion.Slerp(

@@ -109,7 +109,7 @@ public sealed class KnightAI : MonoBehaviour
             patrolSpeed
         );
 
-        actor.SetSpeed(
+        actor.SetMovementSpeed(
             patrolSpeed / chaseSpeed
         );
     }
@@ -152,12 +152,12 @@ public sealed class KnightAI : MonoBehaviour
         {
             motor.Face(direction);
             motor.Stop();
-            actor.SetSpeed(0f);
+            actor.SetMovementSpeed(0f);
             return;
         }
 
         motor.Move(direction, chaseSpeed);
-        actor.SetSpeed(1f);
+        actor.SetMovementSpeed(1f);
     }
 
     private void BeginAttack()
@@ -176,7 +176,7 @@ public sealed class KnightAI : MonoBehaviour
         motor.Face(playerDirection);
         motor.StopImmediately();
 
-        actor.SetSpeed(0f);
+        actor.SetMovementSpeed(0f);
         actor.PlayAttack();
     }
 

@@ -22,26 +22,56 @@ public sealed class PlayerHealthResponder :
     private void Awake()
     {
         if (health == null)
-        {
             health = GetComponent<Health>();
-        }
 
         if (body == null)
-        {
             body = GetComponent<Rigidbody>();
-        }
+
+        if (playerController == null)
+            playerController =
+                GetComponent<PlayerController>();
+
+        if (weaponController == null)
+            weaponController =
+                GetComponent<WeaponController>();
+
+        if (playerAnimator == null)
+            playerAnimator =
+                GetComponent<PlayerAnimator>();
 
         initialPosition = transform.position;
+
+        if (health == null)
+            Debug.LogError(
+                "PlayerHealthResponder thiếu Health.",
+                this
+            );
+
+        if (body == null)
+            Debug.LogError(
+                "PlayerHealthResponder thiếu Rigidbody.",
+                this
+            );
     }
 
     private void OnEnable()
     {
+        if (health == null)
+        {
+            return;
+        }
+
         health.Damaged += HandleDamaged;
         health.Died += HandleDied;
     }
 
     private void OnDisable()
     {
+        if (health == null)
+        {
+            return;
+        }
+
         health.Damaged -= HandleDamaged;
         health.Died -= HandleDied;
     }

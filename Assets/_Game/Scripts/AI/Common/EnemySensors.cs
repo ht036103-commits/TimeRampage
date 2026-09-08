@@ -6,6 +6,13 @@ public class EnemySensors : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private string targetTag = "Player";
 
+    [Header("Environment")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private float groundCheckForward = 0.7f;
+    [SerializeField] private float groundCheckDown = 1.2f;
+    [SerializeField] private float wallCheckDistance = 0.6f;
+
     [Header("Detection")]
     [SerializeField, Min(0f)] private float detectionRange = 12f;
     [SerializeField, Min(0f)] private float loseTargetRange = 16f;
@@ -18,23 +25,51 @@ public class EnemySensors : MonoBehaviour
 
     public Transform Target => target;
     public bool HasTarget { get; private set; }
-    public bool CanSeeTarget { get; private set; }
+    public bool IsTargetVisible { get; private set; }
 
-    public float DistanceToTarget
+    public float DistanceToTarget =>
+        target != null ? Vector3.Distance(transform.position, target.position) : float.MaxValue;
+
+    public bool CanSeeTarget(
+        Transform targetToCheck,
+        float maximumRange
+    )
     {
-        get
+        if (targetToCheck == null)
         {
-            if (target == null)
-            {
-                return Mathf.Infinity;
-            }
-
-            Vector3 offset =
-                target.position - transform.position;
-
-            offset.y = 0f;
-            return offset.magnitude;
+            return false;
         }
+
+        Vector3 origin =
+            eyePoint != null
+                ? eyePoint.position
+                : transform.position + Vector3.up * 1.5f;
+
+        Vector3 targetPoint =
+            targetToCheck.position + Vector3.up * targetHeightOffset;
+
+        Vector3 direction = targetPoint - origin;
+        float distance = direction.magnitude;
+
+        if (distance > maximumRange)
+        {
+            return false;
+        }
+
+        if (!requireLineOfSight)
+        {
+            return true;
+        }
+
+        bool blocked = Physics.Raycast(
+            origin,
+            direction.normalized,
+            distance,
+            obstacleMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        return !blocked;
     }
 
     public Vector3 DirectionToTarget
@@ -46,9 +81,7 @@ public class EnemySensors : MonoBehaviour
                 return Vector3.zero;
             }
 
-            Vector3 direction =
-                target.position - transform.position;
-
+            Vector3 direction = target.position - transform.position;
             direction.y = 0f;
             return direction.normalized;
         }
@@ -66,7 +99,7 @@ public class EnemySensors : MonoBehaviour
             FindTargetIfMissing();
 
             HasTarget = false;
-            CanSeeTarget = false;
+            IsTargetVisible = false;
             return;
         }
 
@@ -81,16 +114,52 @@ public class EnemySensors : MonoBehaviour
             HasTarget = false;
         }
 
-        CanSeeTarget =
+        IsTargetVisible =
             HasTarget &&
             (!requireLineOfSight || CheckLineOfSight());
+    }
+
+    public bool HasGroundAhead(float direction)
+    {
+        Vector3 origin =
+            groundCheck != null
+                ? groundCheck.position
+                : transform.position;
+
+        origin += Vector3.right *
+                Mathf.Sign(direction) *
+                groundCheckForward;
+
+        return Physics.Raycast(
+            origin,
+            Vector3.down,
+            groundCheckDown,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+    }
+
+    public bool HasWallAhead(float direction)
+    {
+        Vector3 origin =
+            eyePoint != null
+                ? eyePoint.position
+                : transform.position + Vector3.up * 0.8f;
+
+        return Physics.Raycast(
+            origin,
+            Vector3.right * Mathf.Sign(direction),
+            wallCheckDistance,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
     }
 
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
         HasTarget = false;
-        CanSeeTarget = false;
+        IsTargetVisible = false;
     }
 
     private void FindTargetIfMissing()
@@ -136,23 +205,16 @@ public class EnemySensors : MonoBehaviour
     private void OnValidate()
     {
         detectionRange = Mathf.Max(0f, detectionRange);
-        loseTargetRange =
-            Mathf.Max(detectionRange, loseTargetRange);
+        loseTargetRange = Mathf.Max(detectionRange, loseTargetRange);
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(
-            transform.position,
-            detectionRange
-        );
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(
-            transform.position,
-            loseTargetRange
-        );
+        Gizmos.DrawWireSphere(transform.position, loseTargetRange);
 
         if (target == null)
         {
@@ -167,9 +229,7 @@ public class EnemySensors : MonoBehaviour
         Vector3 targetPoint =
             target.position + Vector3.up * targetHeightOffset;
 
-        Gizmos.color =
-            CanSeeTarget ? Color.green : Color.red;
-
+        Gizmos.color = IsTargetVisible ? Color.green : Color.red;
         Gizmos.DrawLine(origin, targetPoint);
     }
 }

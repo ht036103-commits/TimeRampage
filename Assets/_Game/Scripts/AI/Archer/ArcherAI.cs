@@ -118,7 +118,7 @@ public sealed class ArcherAI : MonoBehaviour
             patrolSpeed
         );
 
-        actor.SetSpeed(
+        actor.SetMovementSpeed(
             patrolSpeed /
             repositionSpeed
         );
@@ -157,12 +157,12 @@ public sealed class ArcherAI : MonoBehaviour
                     repositionSpeed
                 );
 
-                actor.SetSpeed(1f);
+                actor.SetMovementSpeed(1f);
             }
             else
             {
                 motor.Stop();
-                actor.SetSpeed(0f);
+                actor.SetMovementSpeed(0f);
             }
 
             return;
@@ -177,19 +177,19 @@ public sealed class ArcherAI : MonoBehaviour
                     repositionSpeed
                 );
 
-                actor.SetSpeed(1f);
+                actor.SetMovementSpeed(1f);
             }
             else
             {
                 motor.Stop();
-                actor.SetSpeed(0f);
+                actor.SetMovementSpeed(0f);
             }
 
             return;
         }
 
         motor.Stop();
-        actor.SetSpeed(0f);
+        actor.SetMovementSpeed(0f);
 
         if (cooldownTimer <= 0f)
         {
@@ -205,7 +205,7 @@ public sealed class ArcherAI : MonoBehaviour
         arrowReleased = false;
 
         motor.StopImmediately();
-        actor.SetSpeed(0f);
+        actor.SetMovementSpeed(0f);
         actor.PlayAttack();
     }
 
