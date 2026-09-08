@@ -148,4 +148,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitMask:
     serializedVersion: 2
-    m_Bits: 17152
+    m_Bits: 17664
