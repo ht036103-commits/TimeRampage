@@ -755,7 +755,7 @@ Transform:
   m_GameObject: {fileID: 217704955}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5880945, y: 1.6595697, z: -12}
+  m_LocalPosition: {x: 3.5972302, y: 1.6595697, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1204,7 +1204,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5880945, y: 1.6595697, z: -12}
+  m_LocalPosition: {x: 3.5972302, y: 1.6595697, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2315,7 +2315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1168914682}
   m_Layer: 17
-  m_Name: EyePoint
+  m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2391,6 +2391,10 @@ GameObject:
   - component: {fileID: 1247683298}
   - component: {fileID: 1247683297}
   - component: {fileID: 1247683296}
+  - component: {fileID: 1247683302}
+  - component: {fileID: 1247683301}
+  - component: {fileID: 1247683300}
+  - component: {fileID: 1247683299}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Enemy
@@ -2480,6 +2484,74 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1247683299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247683294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a6b2f6359350b46988e026f3ffb4a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1247683300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247683294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aa5585d2e05ea443999d86e80b0ca08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3.5
+  acceleration: 18
+  rotationSpeed: 12
+  keepGroundVelocity: 1
+--- !u!114 &1247683301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247683294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e21605b238404ce4da6c75125006b441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  targetTag: Player
+  detectionRange: 12
+  loseTargetRange: 16
+  requireLineOfSight: 1
+  eyePoint: {fileID: 0}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  targetHeightOffset: 1
+--- !u!114 &1247683302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247683294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8199f176eba6134582d0706b1c32b29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 1247683296}
+  animator: {fileID: 1293912349}
+  body: {fileID: 1247683298}
+  bodyCollider: {fileID: 1247683297}
+  disableColliderOnDeath: 1
+  destroyDelay: 4
 --- !u!1 &1285193322
 GameObject:
   m_ObjectHideFlags: 0
@@ -2656,6 +2728,12 @@ PrefabInstance:
 --- !u!4 &1293912348 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9a7f31b982c53b94d8fcd54c86dcd130,
+    type: 3}
+  m_PrefabInstance: {fileID: 1293912347}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1293912349 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 9a7f31b982c53b94d8fcd54c86dcd130,
     type: 3}
   m_PrefabInstance: {fileID: 1293912347}
   m_PrefabAsset: {fileID: 0}
