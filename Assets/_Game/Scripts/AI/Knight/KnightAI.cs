@@ -1,174 +1,328 @@
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyActor))]
-[RequireComponent(typeof(EnemySensors))]
-[RequireComponent(typeof(GroundEnemyMotor))]
-[RequireComponent(typeof(KnightAttack))]
 public sealed class KnightAI : MonoBehaviour
 {
     private enum KnightState
     {
-        Idle,
+        Patrol,
         Chase,
-        Attack,
-        Dead
+        Attack
     }
 
     [Header("References")]
     [SerializeField] private EnemyActor actor;
-    [SerializeField] private EnemySensors sensors;
     [SerializeField] private GroundEnemyMotor motor;
-    [SerializeField] private KnightAttack attack;
+    [SerializeField] private EnemySensors sensors;
+    [SerializeField] private Transform player;
 
-    [Header("Combat")]
-    [SerializeField, Min(0.1f)]
-    private float attackRange = 1.7f;
+    [Header("Movement")]
+    [SerializeField] private float patrolSpeed = 2.5f;
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] private float verticalTolerance = 2f;
 
-    private KnightState currentState;
+    [Header("Detection")]
+    [SerializeField] private float detectionRange = 8f;
+    [SerializeField] private float loseTargetRange = 12f;
 
-    private void Reset()
+    [Header("Attack")]
+    [SerializeField] private int attackDamage = 15;
+    [SerializeField] private float attackRange = 1.4f;
+    [SerializeField] private float attackHeight = 0.3f;
+    [SerializeField] private float attackRadius = 0.75f;
+    [SerializeField] private float attackWindup = 0.3f;
+    [SerializeField] private float attackRecovery = 0.55f;
+    [SerializeField] private float attackCooldown = 1.1f;
+    [SerializeField] private LayerMask playerMask;
+
+    private KnightState state =
+        KnightState.Patrol;
+
+    private float patrolDirection = 1f;
+    private float cooldownTimer;
+    private float attackTimer;
+    private bool attackDamageApplied;
+
+    private void Start()
     {
-        actor = GetComponent<EnemyActor>();
-        sensors = GetComponent<EnemySensors>();
-        motor = GetComponent<GroundEnemyMotor>();
-        attack = GetComponent<KnightAttack>();
-    }
-
-    private void Awake()
-    {
-        if (actor == null)
-        {
-            actor = GetComponent<EnemyActor>();
-        }
-
-        if (sensors == null)
-        {
-            sensors = GetComponent<EnemySensors>();
-        }
-
-        if (motor == null)
-        {
-            motor = GetComponent<GroundEnemyMotor>();
-        }
-
-        if (attack == null)
-        {
-            attack = GetComponent<KnightAttack>();
-        }
+        FindPlayerIfNecessary();
     }
 
     private void Update()
     {
-        SelectState();
-        UpdateCurrentState();
+        if (actor == null || actor.IsDead)
+        {
+            motor.StopImmediately();
+            return;
+        }
 
-        actor.SetMovementSpeed(
-            motor.CurrentSpeedNormalized
+        FindPlayerIfNecessary();
+
+        cooldownTimer = Mathf.Max(
+            0f,
+            cooldownTimer - Time.deltaTime
         );
-    }
 
-    private void SelectState()
-    {
-        if (actor.IsDead)
+        switch (state)
         {
-            ChangeState(KnightState.Dead);
-            return;
-        }
-
-        if (!sensors.HasTarget ||
-            !sensors.CanSeeTarget)
-        {
-            ChangeState(KnightState.Idle);
-            return;
-        }
-
-        if (sensors.DistanceToTarget <=
-            attackRange)
-        {
-            ChangeState(KnightState.Attack);
-            return;
-        }
-
-        ChangeState(KnightState.Chase);
-    }
-
-    private void ChangeState(
-        KnightState newState)
-    {
-        if (currentState == newState)
-        {
-            return;
-        }
-
-        currentState = newState;
-    }
-
-    private void UpdateCurrentState()
-    {
-        switch (currentState)
-        {
-            case KnightState.Idle:
-                UpdateIdleState();
+            case KnightState.Patrol:
+                UpdatePatrol();
                 break;
 
             case KnightState.Chase:
-                UpdateChaseState();
+                UpdateChase();
                 break;
 
             case KnightState.Attack:
-                UpdateAttackState();
-                break;
-
-            case KnightState.Dead:
-                UpdateDeadState();
+                UpdateAttack();
                 break;
         }
     }
 
-    private void UpdateIdleState()
+    private void UpdatePatrol()
     {
-        motor.Stop();
-    }
-
-    private void UpdateChaseState()
-    {
-        motor.Move(
-            sensors.DirectionToTarget
-        );
-    }
-
-    private void UpdateAttackState()
-    {
-        motor.Stop();
-
-        motor.FaceDirection(
-            sensors.DirectionToTarget
-        );
-
-        attack.TryAttack();
-    }
-
-    private void UpdateDeadState()
-    {
-        motor.Stop();
-        enabled = false;
-    }
-
-    private void OnDisable()
-    {
-        if (motor != null)
+        if (CanDetectPlayer(detectionRange))
         {
+            state = KnightState.Chase;
+            return;
+        }
+
+        bool groundAhead =
+            sensors.HasGroundAhead(
+                patrolDirection
+            );
+
+        bool wallAhead =
+            sensors.HasWallAhead(
+                patrolDirection
+            );
+
+        if (!groundAhead || wallAhead)
+        {
+            patrolDirection *= -1f;
+            motor.Face(patrolDirection);
             motor.Stop();
+            return;
+        }
+
+        motor.Move(
+            patrolDirection,
+            patrolSpeed
+        );
+
+        actor.SetSpeed(
+            patrolSpeed / chaseSpeed
+        );
+    }
+
+    private void UpdateChase()
+    {
+        if (!CanDetectPlayer(loseTargetRange))
+        {
+            state = KnightState.Patrol;
+            motor.Stop();
+            return;
+        }
+
+        Vector3 playerDifference =
+            player.position -
+            transform.position;
+
+        float horizontalDistance =
+            Mathf.Abs(playerDifference.x);
+
+        if (
+            horizontalDistance <= attackRange &&
+            cooldownTimer <= 0f
+        )
+        {
+            BeginAttack();
+            return;
+        }
+
+        float direction =
+            Mathf.Sign(playerDifference.x);
+
+        bool groundAhead =
+            sensors.HasGroundAhead(direction);
+
+        bool wallAhead =
+            sensors.HasWallAhead(direction);
+
+        if (!groundAhead || wallAhead)
+        {
+            motor.Face(direction);
+            motor.Stop();
+            actor.SetSpeed(0f);
+            return;
+        }
+
+        motor.Move(direction, chaseSpeed);
+        actor.SetSpeed(1f);
+    }
+
+    private void BeginAttack()
+    {
+        state = KnightState.Attack;
+
+        attackTimer = 0f;
+        attackDamageApplied = false;
+
+        float playerDirection =
+            Mathf.Sign(
+                player.position.x -
+                transform.position.x
+            );
+
+        motor.Face(playerDirection);
+        motor.StopImmediately();
+
+        actor.SetSpeed(0f);
+        actor.PlayAttack();
+    }
+
+    private void UpdateAttack()
+    {
+        motor.Stop();
+
+        attackTimer += Time.deltaTime;
+
+        if (
+            !attackDamageApplied &&
+            attackTimer >= attackWindup
+        )
+        {
+            ApplyAttackDamage();
+            attackDamageApplied = true;
+        }
+
+        float totalAttackTime =
+            attackWindup +
+            attackRecovery;
+
+        if (attackTimer >= totalAttackTime)
+        {
+            cooldownTimer = attackCooldown;
+            state = KnightState.Chase;
+        }
+    }
+
+    private void ApplyAttackDamage()
+    {
+        Vector3 attackCenter =
+            transform.position +
+            Vector3.right *
+            motor.FacingDirection *
+            attackRange +
+            Vector3.up *
+            attackHeight;
+
+        Collider[] hits =
+            Physics.OverlapSphere(
+                attackCenter,
+                attackRadius,
+                playerMask,
+                QueryTriggerInteraction.Ignore
+            );
+
+        foreach (Collider hit in hits)
+        {
+            if (
+                player != null &&
+                hit.transform.root != player.root
+            )
+            {
+                continue;
+            }
+
+            IDamageable damageable =
+                hit.GetComponentInParent<
+                    IDamageable
+                >();
+
+            if (damageable != null)
+            {
+                damageable.TakeDamage(
+                    attackDamage
+                );
+
+                break;
+            }
+        }
+    }
+
+    private bool CanDetectPlayer(
+        float range
+    )
+    {
+        if (player == null)
+        {
+            return false;
+        }
+
+        Vector3 difference =
+            player.position -
+            transform.position;
+
+        if (
+            Mathf.Abs(difference.x) > range ||
+            Mathf.Abs(difference.y) >
+            verticalTolerance
+        )
+        {
+            return false;
+        }
+
+        return sensors.CanSeeTarget(
+            player,
+            range
+        );
+    }
+
+    private void FindPlayerIfNecessary()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        GameObject playerObject =
+            GameObject.FindGameObjectWithTag(
+                "Player"
+            );
+
+        if (playerObject != null)
+        {
+            player =
+                playerObject.transform;
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.red;
+
+        float facing =
+            motor == null
+                ? 1f
+                : motor.FacingDirection;
+
+        Vector3 attackCenter =
+            transform.position +
+            Vector3.right *
+            facing *
+            attackRange +
+            Vector3.up *
+            attackHeight;
 
         Gizmos.DrawWireSphere(
+            attackCenter,
+            attackRadius
+        );
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(
             transform.position,
-            attackRange
+            detectionRange
         );
     }
 }
