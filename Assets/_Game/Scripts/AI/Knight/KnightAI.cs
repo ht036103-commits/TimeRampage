@@ -3,12 +3,14 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyActor))]
 [RequireComponent(typeof(EnemySensors))]
 [RequireComponent(typeof(GroundEnemyMotor))]
+[RequireComponent(typeof(KnightAttack))]
 public sealed class KnightAI : MonoBehaviour
 {
     private enum KnightState
     {
         Idle,
         Chase,
+        Attack,
         Dead
     }
 
@@ -16,6 +18,11 @@ public sealed class KnightAI : MonoBehaviour
     [SerializeField] private EnemyActor actor;
     [SerializeField] private EnemySensors sensors;
     [SerializeField] private GroundEnemyMotor motor;
+    [SerializeField] private KnightAttack attack;
+
+    [Header("Combat")]
+    [SerializeField, Min(0.1f)]
+    private float attackRange = 1.7f;
 
     private KnightState currentState;
 
@@ -24,6 +31,7 @@ public sealed class KnightAI : MonoBehaviour
         actor = GetComponent<EnemyActor>();
         sensors = GetComponent<EnemySensors>();
         motor = GetComponent<GroundEnemyMotor>();
+        attack = GetComponent<KnightAttack>();
     }
 
     private void Awake()
@@ -42,24 +50,16 @@ public sealed class KnightAI : MonoBehaviour
         {
             motor = GetComponent<GroundEnemyMotor>();
         }
+
+        if (attack == null)
+        {
+            attack = GetComponent<KnightAttack>();
+        }
     }
 
     private void Update()
     {
-        if (actor.IsDead)
-        {
-            ChangeState(KnightState.Dead);
-        }
-        else if (sensors.HasTarget &&
-                 sensors.CanSeeTarget)
-        {
-            ChangeState(KnightState.Chase);
-        }
-        else
-        {
-            ChangeState(KnightState.Idle);
-        }
-
+        SelectState();
         UpdateCurrentState();
 
         actor.SetMovementSpeed(
@@ -67,7 +67,33 @@ public sealed class KnightAI : MonoBehaviour
         );
     }
 
-    private void ChangeState(KnightState newState)
+    private void SelectState()
+    {
+        if (actor.IsDead)
+        {
+            ChangeState(KnightState.Dead);
+            return;
+        }
+
+        if (!sensors.HasTarget ||
+            !sensors.CanSeeTarget)
+        {
+            ChangeState(KnightState.Idle);
+            return;
+        }
+
+        if (sensors.DistanceToTarget <=
+            attackRange)
+        {
+            ChangeState(KnightState.Attack);
+            return;
+        }
+
+        ChangeState(KnightState.Chase);
+    }
+
+    private void ChangeState(
+        KnightState newState)
     {
         if (currentState == newState)
         {
@@ -82,20 +108,50 @@ public sealed class KnightAI : MonoBehaviour
         switch (currentState)
         {
             case KnightState.Idle:
-                motor.Stop();
+                UpdateIdleState();
                 break;
 
             case KnightState.Chase:
-                motor.Move(
-                    sensors.DirectionToTarget
-                );
+                UpdateChaseState();
+                break;
+
+            case KnightState.Attack:
+                UpdateAttackState();
                 break;
 
             case KnightState.Dead:
-                motor.Stop();
-                enabled = false;
+                UpdateDeadState();
                 break;
         }
+    }
+
+    private void UpdateIdleState()
+    {
+        motor.Stop();
+    }
+
+    private void UpdateChaseState()
+    {
+        motor.Move(
+            sensors.DirectionToTarget
+        );
+    }
+
+    private void UpdateAttackState()
+    {
+        motor.Stop();
+
+        motor.FaceDirection(
+            sensors.DirectionToTarget
+        );
+
+        attack.TryAttack();
+    }
+
+    private void UpdateDeadState()
+    {
+        motor.Stop();
+        enabled = false;
     }
 
     private void OnDisable()
@@ -104,5 +160,15 @@ public sealed class KnightAI : MonoBehaviour
         {
             motor.Stop();
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.magenta;
+
+        Gizmos.DrawWireSphere(
+            transform.position,
+            attackRange
+        );
     }
 }
