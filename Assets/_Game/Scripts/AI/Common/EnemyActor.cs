@@ -23,6 +23,11 @@ public class EnemyActor : MonoBehaviour
     private static readonly int DeadHash =
         Animator.StringToHash("Dead");
 
+    private bool CanUseAnimator =>
+        animator != null &&
+        animator.isActiveAndEnabled &&
+        animator.runtimeAnimatorController != null;
+
     private void Reset()
     {
         health = GetComponent<Health>();
@@ -52,6 +57,21 @@ public class EnemyActor : MonoBehaviour
         {
             animator = GetComponentInChildren<Animator>();
         }
+
+        if (animator == null)
+        {
+            Debug.LogError(
+                $"{name}: EnemyActor không tìm thấy Animator.",
+                this
+            );
+        }
+        else if (animator.runtimeAnimatorController == null)
+        {
+            Debug.LogError(
+                $"{name}: Animator của model chưa được gán Animator Controller.",
+                animator
+    );
+}
     }
 
     private void OnEnable()
@@ -78,7 +98,7 @@ public class EnemyActor : MonoBehaviour
 
     public void SetMovementSpeed(float normalizedSpeed)
     {
-        if (animator == null || IsDead)
+        if (!CanUseAnimator || IsDead)
         {
             return;
         }
@@ -93,7 +113,7 @@ public class EnemyActor : MonoBehaviour
 
     public void PlayAttack()
     {
-        if (animator == null || IsDead)
+        if (!CanUseAnimator || IsDead)
         {
             return;
         }
@@ -104,7 +124,7 @@ public class EnemyActor : MonoBehaviour
 
     private void HandleDamaged(int amount)
     {
-        if (animator == null || IsDead)
+        if (!CanUseAnimator || IsDead)
         {
             return;
         }
@@ -114,7 +134,7 @@ public class EnemyActor : MonoBehaviour
 
     private void HandleDied()
     {
-        if (animator != null)
+        if (!CanUseAnimator || IsDead)
         {
             animator.ResetTrigger(HurtHash);
             animator.SetBool(DeadHash, true);

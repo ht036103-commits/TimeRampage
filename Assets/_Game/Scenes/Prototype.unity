@@ -504,7 +504,7 @@ Transform:
   m_GameObject: {fileID: 217704955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5972302, y: 0.55956966, z: -12}
+  m_LocalPosition: {x: 3.5803332, y: 1.5595696, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -638,7 +638,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5972302, y: 0.55956966, z: -12}
+  m_LocalPosition: {x: 3.5803332, y: 1.5595696, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -999,6 +999,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mage_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 2feab8203f603cc4e9fc8e5b9de5434f,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b5303aaa06e30ec4a9495fbe30c047f3, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 2feab8203f603cc4e9fc8e5b9de5434f,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1050,7 +1060,6 @@ GameObject:
   - component: {fileID: 661608586}
   - component: {fileID: 661608585}
   - component: {fileID: 661608583}
-  - component: {fileID: 661608582}
   - component: {fileID: 661608589}
   m_Layer: 10
   m_Name: Mage
@@ -1078,27 +1087,6 @@ Transform:
   - {fileID: 18312502}
   m_Father: {fileID: 1990409557}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &661608582
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 661608580}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b5303aaa06e30ec4a9495fbe30c047f3, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &661608583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1203,7 +1191,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 661608580}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 927b1b943a732df49be3dff43ded7e1c, type: 3}
   m_Name: 
@@ -1211,7 +1199,7 @@ MonoBehaviour:
   target: {fileID: 0}
   magicSpawnPoint: {fileID: 0}
   magicProjectilePrefab: {fileID: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 1933316181}
   detectionRange: 14
   castRange: 9
   retreatDistance: 4
@@ -1591,6 +1579,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Knight_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 9a7f31b982c53b94d8fcd54c86dcd130,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c5fb8f48b68280c438c718a1b3116128, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 9a7f31b982c53b94d8fcd54c86dcd130,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1839,7 +1837,6 @@ GameObject:
   - component: {fileID: 1247683300}
   - component: {fileID: 1247683299}
   - component: {fileID: 1247683303}
-  - component: {fileID: 1247683304}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Enemy
@@ -1959,7 +1956,7 @@ MonoBehaviour:
   attackCooldown: 1.1
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
 --- !u!114 &1247683300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2045,27 +2042,6 @@ MonoBehaviour:
   hitDelay: 0.35
   attackDuration: 0.8
   cooldown: 1.2
---- !u!95 &1247683304
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1247683294}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c5fb8f48b68280c438c718a1b3116128, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1313962987
 GameObject:
   m_ObjectHideFlags: 0
@@ -2371,6 +2347,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Archer_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: e9956c9bd60eecb45b2fd623b2189a43,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 13e08f7fa0b9d604085b655ed8c3c6a7, type: 2}
+    - target: {fileID: 5866666021909216657, guid: e9956c9bd60eecb45b2fd623b2189a43,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2670,7 +2656,7 @@ Transform:
   m_GameObject: {fileID: 1913063775}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2702,7 +2688,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!54 &1913063778
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2844,7 +2830,6 @@ GameObject:
   - component: {fileID: 1984053699}
   - component: {fileID: 1984053698}
   - component: {fileID: 1984053697}
-  - component: {fileID: 1984053696}
   - component: {fileID: 1984053703}
   m_Layer: 10
   m_Name: Archer
@@ -2872,27 +2857,6 @@ Transform:
   - {fileID: 676296803}
   m_Father: {fileID: 1990409557}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &1984053696
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984053694}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 13e08f7fa0b9d604085b655ed8c3c6a7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1984053697
 MonoBehaviour:
   m_ObjectHideFlags: 0

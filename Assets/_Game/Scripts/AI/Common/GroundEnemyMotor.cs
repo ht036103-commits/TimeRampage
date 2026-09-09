@@ -62,11 +62,14 @@ public class GroundEnemyMotor : MonoBehaviour
         }
 
         worldDirection.y = 0f;
+        worldDirection.z = 0f;
 
         desiredDirection =
             worldDirection.sqrMagnitude > 1f
                 ? worldDirection.normalized
                 : worldDirection;
+
+        desiredSpeed = moveSpeed;
     }
 
     public void Face(float direction)
