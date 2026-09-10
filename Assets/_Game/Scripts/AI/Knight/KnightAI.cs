@@ -130,10 +130,16 @@ public sealed class KnightAI : MonoBehaviour
         float horizontalDistance =
             Mathf.Abs(playerDifference.x);
 
+        float verticalDistance =
+            Mathf.Abs(playerDifference.y);
+
         if (
             horizontalDistance <= attackRange &&
+            verticalDistance <=
+                verticalTolerance &&
             cooldownTimer <= 0f
         )
+
         {
             BeginAttack();
             return;
