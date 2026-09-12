@@ -134,7 +134,7 @@ public class EnemyActor : MonoBehaviour
 
     private void HandleDied()
     {
-        if (!CanUseAnimator || IsDead)
+        if (CanUseAnimator)
         {
             animator.ResetTrigger(HurtHash);
             animator.SetBool(DeadHash, true);
