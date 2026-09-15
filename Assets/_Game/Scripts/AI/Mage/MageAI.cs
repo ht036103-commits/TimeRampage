@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(EnemyActor))]
 [RequireComponent(typeof(GroundEnemyMotor))]
-public class MageAI : MonoBehaviour
+public sealed class MageAI : MonoBehaviour
 {
     private enum MageState
     {
@@ -17,7 +17,6 @@ public class MageAI : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private Transform magicSpawnPoint;
     [SerializeField] private GameObject magicProjectilePrefab;
-    [SerializeField] private Animator animator;
 
     [Header("Distance")]
     [SerializeField] private float detectionRange = 14f;
@@ -43,24 +42,11 @@ public class MageAI : MonoBehaviour
     private bool isCasting;
     private bool projectileReleased;
 
-    private static readonly int SpeedHash =
-        Animator.StringToHash("Speed");
-
-    private static readonly int AttackHash =
-        Animator.StringToHash("Attack");
-
-    private static readonly int DeadHash =
-        Animator.StringToHash("Dead");
 
     private void Awake()
     {
         enemyActor = GetComponent<EnemyActor>();
         motor = GetComponent<GroundEnemyMotor>();
-
-        if (animator == null)
-        {
-            animator = GetComponentInChildren<Animator>();
-        }
     }
 
     private void Start()
@@ -187,10 +173,7 @@ public class MageAI : MonoBehaviour
         motor.Stop();
         FaceTarget();
 
-        if (animator != null)
-        {
-            animator.SetTrigger(AttackHash);
-        }
+        enemyActor.PlayAttack();
 
         Invoke(nameof(ReleaseProjectile), castingWindup);
         Invoke(nameof(FinishCasting), castingWindup + 0.5f);
@@ -280,10 +263,7 @@ public class MageAI : MonoBehaviour
 
     private void UpdateAnimator(float speed)
     {
-        if (animator != null)
-        {
-            animator.SetFloat(SpeedHash, speed, 0.1f, Time.deltaTime);
-        }
+        enemyActor.SetMovementSpeed(speed);
     }
 
     private void ChangeState(MageState newState)
@@ -304,10 +284,6 @@ public class MageAI : MonoBehaviour
         CancelInvoke();
         motor.Stop();
 
-        if (animator != null)
-        {
-            animator.SetBool(DeadHash, true);
-        }
 
         enabled = false;
     }
