@@ -1750,7 +1750,7 @@ MonoBehaviour:
   target: {fileID: 0}
   magicSpawnPoint: {fileID: 0}
   magicProjectilePrefab: {fileID: 0}
-  animator: {fileID: 0}
+
   detectionRange: 14
   castRange: 9
   retreatDistance: 4
