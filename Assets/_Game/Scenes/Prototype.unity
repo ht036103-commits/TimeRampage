@@ -2264,7 +2264,6 @@ GameObject:
   - component: {fileID: 1247683301}
   - component: {fileID: 1247683300}
   - component: {fileID: 1247683299}
-  - component: {fileID: 1247683303}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Enemy
@@ -2448,28 +2447,6 @@ MonoBehaviour:
   bodyCollider: {fileID: 1247683297}
   disableColliderOnDeath: 1
   destroyDelay: 2
---- !u!114 &1247683303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1247683294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97045f608a8ed0d4ea8cf5887ce48a85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actor: {fileID: 1247683302}
-  attackPoint: {fileID: 1168914682}
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 512
-  attackRadius: 1.1
-  damage: 15
-  hitDelay: 0.35
-  attackDuration: 0.8
-  cooldown: 1.2
 --- !u!1 &1259145332
 GameObject:
   m_ObjectHideFlags: 0
