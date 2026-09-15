@@ -51,6 +51,13 @@ public sealed class ArcherAI : MonoBehaviour
     private float shootingTimer;
     private bool arrowReleased;
 
+    private void Awake()
+    {
+        actor ??= GetComponent<EnemyActor>();
+        motor ??= GetComponent<GroundEnemyMotor>();
+        sensors ??= GetComponent<EnemySensors>();
+    }
+
     private void Start()
     {
         FindPlayerIfNecessary();
@@ -58,7 +65,13 @@ public sealed class ArcherAI : MonoBehaviour
 
     private void Update()
     {
-        if (actor == null || actor.IsDead)
+        if (actor == null || motor == null || sensors == null)
+        {
+            enabled = false;
+            return;
+        }
+
+        if (actor.IsDead)
         {
             motor.StopImmediately();
             return;
@@ -92,6 +105,8 @@ public sealed class ArcherAI : MonoBehaviour
         if (CanSeePlayer(detectionRange))
         {
             state = ArcherState.Engage;
+            motor.Stop();
+            actor.SetMovementSpeed(0f);
             return;
         }
 
@@ -110,6 +125,7 @@ public sealed class ArcherAI : MonoBehaviour
             patrolDirection *= -1f;
             motor.Face(patrolDirection);
             motor.Stop();
+            actor.SetMovementSpeed(0f);
             return;
         }
 
@@ -130,6 +146,7 @@ public sealed class ArcherAI : MonoBehaviour
         {
             state = ArcherState.Patrol;
             motor.Stop();
+            actor.SetMovementSpeed(0f);
             return;
         }
 
