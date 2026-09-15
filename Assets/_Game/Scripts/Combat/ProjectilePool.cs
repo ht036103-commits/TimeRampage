@@ -12,6 +12,16 @@ public sealed class ProjectilePool : MonoBehaviour
 
     private void Awake()
     {
+        if (projectilePrefab == null)
+        {
+            Debug.LogError(
+                $"{name}: Projectile Prefab chưa được gán.",
+                this
+            );
+
+            return;
+        }
+
         pool = new ObjectPool<Projectile>(
             createFunc: CreateProjectile,
             actionOnGet: HandleGetProjectile,
@@ -23,13 +33,29 @@ public sealed class ProjectilePool : MonoBehaviour
         );
     }
 
-    public Projectile Get()
+   public Projectile Get()
     {
+        if (pool == null)
+        {
+            Debug.LogError(
+                $"{name}: ProjectilePool chưa sẵn sàng. " +
+                "Hãy gán Projectile Prefab trong Inspector.",
+                this
+            );
+
+            return null;
+        }
+
         return pool.Get();
     }
 
     public void Release(Projectile projectile)
     {
+        if (pool == null || projectile == null)
+        {
+            return;
+        }
+
         pool.Release(projectile);
     }
 

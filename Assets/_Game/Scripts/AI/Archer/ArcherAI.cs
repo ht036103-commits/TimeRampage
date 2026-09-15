@@ -269,8 +269,22 @@ public sealed class ArcherAI : MonoBehaviour
             (targetPosition - spawnPosition)
             .normalized;
 
-        Projectile arrow =
-            arrowPool.Get();
+        if (arrowPool == null)
+        {
+            Debug.LogError(
+                $"{name}: Archer chưa được gán Arrow Pool.",
+                this
+            );
+
+            return;
+        }
+
+        Projectile arrow = arrowPool.Get();
+
+        if (arrow == null)
+        {
+            return;
+        }
 
         arrow.Launch(
             transform,

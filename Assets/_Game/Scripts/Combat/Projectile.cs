@@ -110,6 +110,13 @@ public sealed class Projectile : MonoBehaviour
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
 
-        releaseAction?.Invoke(this);
+        ownerRoot = null;
+        damage = 0;
+        lifeTimer = 0f;
+
+        Action<Projectile> callback = releaseAction;
+        releaseAction = null;
+
+        callback?.Invoke(this);
     }
 }

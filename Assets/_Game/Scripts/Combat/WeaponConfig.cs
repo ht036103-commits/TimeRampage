@@ -19,5 +19,4 @@ public sealed class WeaponConfig : ScriptableObject
     [Range(1f, 45f)]
     public float scatterStepAngle = 12f;
 
-    [Min(0.1f)] public float scatterDuration = 10f;
 }

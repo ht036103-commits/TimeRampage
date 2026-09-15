@@ -36,6 +36,16 @@ public sealed class WeaponController : MonoBehaviour
         }
     }
 
+    private bool HasRequiredReferences()
+    {
+        return
+            config != null &&
+            playerController != null &&
+            projectilePool != null &&
+            weaponPivot != null &&
+            firePoint != null;
+    }
+
     private void OnEnable()
     {
         inputActions.Player.Enable();
@@ -53,6 +63,11 @@ public sealed class WeaponController : MonoBehaviour
 
     private void Update()
     {
+        if (!HasRequiredReferences())
+        {
+            return;
+        }
+        
         UpdateAimDirection();
         UpdateWeaponPivot();
 
