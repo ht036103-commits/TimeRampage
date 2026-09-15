@@ -17,6 +17,12 @@ public class EnemyActor : MonoBehaviour
     public bool IsDead => health != null && health.IsDead;
     public Animator Animator => animator;
 
+    private static readonly int SpeedHash =
+        Animator.StringToHash("Speed");
+
+    private static readonly int AttackHash =
+        Animator.StringToHash("Attack");
+
     private static readonly int HurtHash =
         Animator.StringToHash("Hurt");
 
@@ -70,8 +76,8 @@ public class EnemyActor : MonoBehaviour
             Debug.LogError(
                 $"{name}: Animator của model chưa được gán Animator Controller.",
                 animator
-    );
-}
+            );
+        }
     }
 
     private void OnEnable()
@@ -104,7 +110,7 @@ public class EnemyActor : MonoBehaviour
         }
 
         animator.SetFloat(
-            "Speed",
+            SpeedHash,
             Mathf.Clamp01(normalizedSpeed),
             0.1f,
             Time.deltaTime
@@ -119,7 +125,7 @@ public class EnemyActor : MonoBehaviour
         }
 
         animator.ResetTrigger(HurtHash);
-        animator.SetTrigger("Attack");
+        animator.SetTrigger(AttackHash);
     }
 
     private void HandleDamaged(int amount)
