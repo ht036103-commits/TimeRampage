@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 18312501}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1952,24 +1952,35 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 661608580}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 927b1b943a732df49be3dff43ded7e1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actor: {fileID: 661608585}
+  motor: {fileID: 661608583}
   target: {fileID: 0}
-  magicSpawnPoint: {fileID: 0}
-  magicProjectilePrefab: {fileID: 0}
-  animator: {fileID: 0}
+  magicSpawnPoint: {fileID: 2030043631}
+  projectilePool: {fileID: 1259145333}
+  groundCheck: {fileID: 18312502}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
   detectionRange: 14
+  verticalTolerance: 8
   castRange: 9
   retreatDistance: 4
   stopDistance: 7
+  chaseSpeed: 3.5
+  retreatSpeed: 4
+  groundCheckForward: 0.7
+  groundCheckDown: 1.2
+  projectileDamage: 12
   castCooldown: 2.5
   castingWindup: 0.7
+  castingRecovery: 0.5
   projectileSpeed: 11
   projectileLifetime: 5
-  rotationSpeed: 10
 --- !u!1 &676296802
 GameObject:
   m_ObjectHideFlags: 0
@@ -1995,7 +2006,7 @@ Transform:
   m_GameObject: {fileID: 676296802}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4310,7 +4321,7 @@ Transform:
   m_GameObject: {fileID: 2030043630}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.65, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4656,7 +4667,7 @@ Transform:
   m_GameObject: {fileID: 2117442673}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

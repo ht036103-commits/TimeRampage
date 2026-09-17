@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8140873736976258330}
   - component: {fileID: 4988735895486649803}
   - component: {fileID: 3598305894898777351}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: PFB_EnemyArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

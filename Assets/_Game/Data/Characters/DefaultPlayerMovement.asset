@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7493e4033f4cb4784c5601de00f480, type: 3}
   m_Name: DefaultPlayerMovement
   m_EditorClassIdentifier: 
-  maxRunSpeed: 8
-  groundAcceleration: 75
-  groundDeceleration: 90
-  airAcceleration: 45
-  airDeceleration: 20
+  maxRunSpeed: 7
+  groundAcceleration: 40
+  groundDeceleration: 55
+  airAcceleration: 30
+  airDeceleration: 18
   jumpHeight: 2.6
   doubleJumpHeight: 2.3
   extraAirJumps: 1

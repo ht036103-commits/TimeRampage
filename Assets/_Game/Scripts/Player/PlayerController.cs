@@ -34,6 +34,10 @@ public sealed class PlayerController : MonoBehaviour
     public bool IsGrounded => isGrounded;
     public bool IsDashing => dashTimer > 0f;
     public float MoveAmount => Mathf.Abs(moveInput);
+    public float CurrentSpeedNormalized =>
+        body == null || config == null || config.maxRunSpeed <= 0f
+            ? 0f
+            : Mathf.Clamp01(Mathf.Abs(body.velocity.x) / config.maxRunSpeed);
     public float FacingDirection => facingDirection;
     public float VerticalSpeed => body == null ? 0f : body.velocity.y;
     public event Action Jumped;
