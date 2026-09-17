@@ -2,333 +2,287 @@ using UnityEngine;
 
 [RequireComponent(typeof(EnemyActor))]
 [RequireComponent(typeof(GroundEnemyMotor))]
-public class MageAI : MonoBehaviour
+public sealed class MageAI : MonoBehaviour
 {
     private enum MageState
     {
         Idle,
         Chase,
         Retreat,
-        Cast,
-        Dead
+        Cast
     }
 
     [Header("References")]
+    [SerializeField] private EnemyActor actor;
+    [SerializeField] private GroundEnemyMotor motor;
     [SerializeField] private Transform target;
     [SerializeField] private Transform magicSpawnPoint;
-    [SerializeField] private GameObject magicProjectilePrefab;
-    [SerializeField] private Animator animator;
+    [SerializeField] private ProjectilePool projectilePool;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundMask;
 
     [Header("Distance")]
-    [SerializeField] private float detectionRange = 14f;
-    [SerializeField] private float castRange = 9f;
-    [SerializeField] private float retreatDistance = 4f;
-    [SerializeField] private float stopDistance = 7f;
+    [SerializeField, Min(0f)] private float detectionRange = 14f;
+    [SerializeField, Min(0f)] private float verticalTolerance = 8f;
+    [SerializeField, Min(0f)] private float castRange = 9f;
+    [SerializeField, Min(0f)] private float retreatDistance = 4f;
+    [SerializeField, Min(0f)] private float stopDistance = 7f;
+
+    [Header("Movement")]
+    [SerializeField, Min(0f)] private float chaseSpeed = 3.5f;
+    [SerializeField, Min(0f)] private float retreatSpeed = 4f;
+    [SerializeField, Min(0f)] private float groundCheckForward = 0.7f;
+    [SerializeField, Min(0f)] private float groundCheckDown = 1.2f;
 
     [Header("Casting")]
-    [SerializeField] private float castCooldown = 2.5f;
-    [SerializeField] private float castingWindup = 0.7f;
-    [SerializeField] private float projectileSpeed = 11f;
-    [SerializeField] private float projectileLifetime = 5f;
+    [SerializeField, Min(1)] private int projectileDamage = 12;
+    [SerializeField, Min(0.1f)] private float castCooldown = 2.5f;
+    [SerializeField, Min(0f)] private float castingWindup = 0.7f;
+    [SerializeField, Min(0f)] private float castingRecovery = 0.5f;
+    [SerializeField, Min(0f)] private float projectileSpeed = 11f;
+    [SerializeField, Min(0.1f)] private float projectileLifetime = 5f;
 
-    [Header("Rotation")]
-    [SerializeField] private float rotationSpeed = 10f;
-
-    private EnemyActor enemyActor;
-    private GroundEnemyMotor motor;
-
-    private MageState currentState = MageState.Idle;
+    private MageState state = MageState.Idle;
     private float nextCastTime;
-
-    private bool isCasting;
+    private float castTimer;
     private bool projectileReleased;
-
-    private static readonly int SpeedHash =
-        Animator.StringToHash("Speed");
-
-    private static readonly int AttackHash =
-        Animator.StringToHash("Attack");
-
-    private static readonly int DeadHash =
-        Animator.StringToHash("Dead");
 
     private void Awake()
     {
-        enemyActor = GetComponent<EnemyActor>();
-        motor = GetComponent<GroundEnemyMotor>();
-
-        if (animator == null)
-        {
-            animator = GetComponentInChildren<Animator>();
-        }
+        actor ??= GetComponent<EnemyActor>();
+        motor ??= GetComponent<GroundEnemyMotor>();
     }
 
     private void Start()
     {
-        if (target == null)
-        {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-            if (player != null)
-            {
-                target = player.transform;
-            }
-        }
+        FindTargetIfNecessary();
     }
 
     private void Update()
     {
-        if (enemyActor == null || enemyActor.IsDead)
+        if (actor == null || motor == null)
         {
-            EnterDeadState();
+            enabled = false;
             return;
         }
+
+        if (actor.IsDead)
+        {
+            motor.StopImmediately();
+            enabled = false;
+            return;
+        }
+
+        FindTargetIfNecessary();
 
         if (target == null)
         {
-            ChangeState(MageState.Idle);
-            UpdateAnimator(0f);
+            StopMoving();
             return;
         }
 
-        float distanceToTarget =
-            Vector3.Distance(transform.position, target.position);
-
-        if (isCasting)
+        if (state == MageState.Cast)
         {
-            ChangeState(MageState.Cast);
-            FaceTarget();
-            UpdateAnimator(0f);
+            UpdateCasting();
             return;
         }
 
-        SelectState(distanceToTarget);
-        ExecuteCurrentState();
-    }
+        float horizontalDistance =
+            Mathf.Abs(target.position.x - transform.position.x);
+        float verticalDistance =
+            Mathf.Abs(target.position.y - transform.position.y);
 
-    private void SelectState(float distanceToTarget)
-    {
-        if (distanceToTarget > detectionRange)
+        FaceTarget();
+
+        if (horizontalDistance > detectionRange ||
+            verticalDistance > verticalTolerance)
         {
             ChangeState(MageState.Idle);
+            StopMoving();
+            return;
         }
-        else if (distanceToTarget < retreatDistance)
+
+        if (horizontalDistance < retreatDistance)
         {
             ChangeState(MageState.Retreat);
+            Move(-DirectionToTarget(), retreatSpeed);
+            return;
         }
-        else if (distanceToTarget <= castRange &&
-                 Time.time >= nextCastTime)
+
+        if (horizontalDistance <= castRange &&
+            Time.time >= nextCastTime)
         {
-            StartCasting();
+            BeginCasting();
+            return;
         }
-        else if (distanceToTarget > stopDistance)
+
+        if (horizontalDistance > stopDistance)
         {
             ChangeState(MageState.Chase);
+            Move(DirectionToTarget(), chaseSpeed);
+            return;
         }
-        else
+
+        ChangeState(MageState.Idle);
+        StopMoving();
+    }
+
+    private void Move(float direction, float speed)
+    {
+        if (!HasGroundAhead(direction))
         {
-            ChangeState(MageState.Idle);
+            StopMoving();
+            return;
         }
-    }
 
-    private void ExecuteCurrentState()
-    {
-        switch (currentState)
-        {
-            case MageState.Idle:
-                StopMoving();
-                FaceTarget();
-                break;
-
-            case MageState.Chase:
-                MoveTowardsTarget();
-                break;
-
-            case MageState.Retreat:
-                MoveAwayFromTarget();
-                break;
-        }
-    }
-
-    private void MoveTowardsTarget()
-    {
-        Vector3 direction =
-            GetFlatDirection(target.position - transform.position);
-
-        motor.Move(direction);
-        RotateTowards(direction);
-        UpdateAnimator(1f);
-    }
-
-    private void MoveAwayFromTarget()
-    {
-        Vector3 direction =
-            GetFlatDirection(transform.position - target.position);
-
-        motor.Move(direction);
-        RotateTowards(-direction);
-        UpdateAnimator(1f);
+        motor.Move(direction, speed);
+        motor.Face(direction);
+        actor.SetMovementSpeed(1f);
     }
 
     private void StopMoving()
     {
         motor.Stop();
-        UpdateAnimator(0f);
+        actor.SetMovementSpeed(0f);
     }
 
-    private void StartCasting()
+    private void BeginCasting()
     {
         ChangeState(MageState.Cast);
-
-        isCasting = true;
+        castTimer = 0f;
         projectileReleased = false;
         nextCastTime = Time.time + castCooldown;
 
+        motor.StopImmediately();
+        actor.SetMovementSpeed(0f);
+        actor.PlayAttack();
+    }
+
+    private void UpdateCasting()
+    {
         motor.Stop();
         FaceTarget();
+        castTimer += Time.deltaTime;
 
-        if (animator != null)
+        if (!projectileReleased &&
+            castTimer >= castingWindup)
         {
-            animator.SetTrigger(AttackHash);
+            ReleaseProjectile();
+            projectileReleased = true;
         }
 
-        Invoke(nameof(ReleaseProjectile), castingWindup);
-        Invoke(nameof(FinishCasting), castingWindup + 0.5f);
-    }
-
-    private void ReleaseProjectile()
-    {
-        if (!isCasting ||
-            projectileReleased ||
-            enemyActor.IsDead ||
-            target == null ||
-            magicSpawnPoint == null ||
-            magicProjectilePrefab == null)
-        {
-            return;
-        }
-
-        projectileReleased = true;
-
-        Vector3 targetPoint = target.position + Vector3.up;
-        Vector3 direction =
-            (targetPoint - magicSpawnPoint.position).normalized;
-
-        GameObject projectile = Instantiate(
-            magicProjectilePrefab,
-            magicSpawnPoint.position,
-            Quaternion.LookRotation(direction)
-        );
-
-        Rigidbody projectileBody =
-            projectile.GetComponent<Rigidbody>();
-
-        if (projectileBody != null)
-        {
-            projectileBody.velocity = direction * projectileSpeed;
-        }
-
-        Destroy(projectile, projectileLifetime);
-    }
-
-    private void FinishCasting()
-    {
-        isCasting = false;
-        projectileReleased = false;
-
-        if (currentState != MageState.Dead)
+        if (castTimer >= castingWindup + castingRecovery)
         {
             ChangeState(MageState.Idle);
         }
     }
 
-    private void FaceTarget()
+    private void ReleaseProjectile()
     {
-        if (target == null)
+        if (target == null ||
+            magicSpawnPoint == null ||
+            projectilePool == null)
         {
             return;
         }
 
+        Projectile projectile = projectilePool.Get();
+
+        if (projectile == null)
+        {
+            return;
+        }
+
+        Vector3 targetPoint = target.position + Vector3.up;
         Vector3 direction =
-            GetFlatDirection(target.position - transform.position);
+            (targetPoint - magicSpawnPoint.position).normalized;
 
-        RotateTowards(direction);
-    }
-
-    private void RotateTowards(Vector3 direction)
-    {
-        if (direction.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Quaternion targetRotation =
-            Quaternion.LookRotation(direction);
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
+        projectile.Launch(
+            transform,
+            magicSpawnPoint.position,
+            direction,
+            projectileDamage,
+            projectileSpeed,
+            projectileLifetime,
+            projectilePool.Release
         );
     }
 
-    private Vector3 GetFlatDirection(Vector3 direction)
+    private float DirectionToTarget()
     {
-        direction.y = 0f;
-        return direction.normalized;
+        return Mathf.Sign(target.position.x - transform.position.x);
     }
 
-    private void UpdateAnimator(float speed)
+    private void FaceTarget()
     {
-        if (animator != null)
+        float direction = DirectionToTarget();
+
+        if (Mathf.Abs(direction) > 0.001f)
         {
-            animator.SetFloat(SpeedHash, speed, 0.1f, Time.deltaTime);
+            motor.Face(direction);
+        }
+    }
+
+    private bool HasGroundAhead(float direction)
+    {
+        if (groundCheck == null || Mathf.Abs(direction) < 0.001f)
+        {
+            return true;
+        }
+
+        Vector3 origin =
+            groundCheck.position +
+            Vector3.right * Mathf.Sign(direction) * groundCheckForward;
+
+        return Physics.Raycast(
+            origin,
+            Vector3.down,
+            groundCheckDown,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+    }
+
+    private void FindTargetIfNecessary()
+    {
+        if (target != null)
+        {
+            return;
+        }
+
+        GameObject player =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+        {
+            target = player.transform;
         }
     }
 
     private void ChangeState(MageState newState)
     {
-        currentState = newState;
-    }
-
-    private void EnterDeadState()
-    {
-        if (currentState == MageState.Dead)
-        {
-            return;
-        }
-
-        currentState = MageState.Dead;
-        isCasting = false;
-
-        CancelInvoke();
-        motor.Stop();
-
-        if (animator != null)
-        {
-            animator.SetBool(DeadHash, true);
-        }
-
-        enabled = false;
+        state = newState;
     }
 
     private void OnDisable()
     {
-        CancelInvoke();
+        if (motor != null)
+        {
+            motor.StopImmediately();
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnValidate()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position, castRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, retreatDistance);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, stopDistance);
+        detectionRange = Mathf.Max(0f, detectionRange);
+        verticalTolerance = Mathf.Max(0f, verticalTolerance);
+        castRange = Mathf.Max(0f, castRange);
+        retreatDistance = Mathf.Max(0f, retreatDistance);
+        stopDistance = Mathf.Clamp(stopDistance, retreatDistance, castRange);
+        chaseSpeed = Mathf.Max(0f, chaseSpeed);
+        retreatSpeed = Mathf.Max(0f, retreatSpeed);
+        projectileDamage = Mathf.Max(1, projectileDamage);
+        castCooldown = Mathf.Max(0.1f, castCooldown);
+        projectileLifetime = Mathf.Max(0.1f, projectileLifetime);
     }
 }
