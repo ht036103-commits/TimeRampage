@@ -42,6 +42,11 @@ public sealed class PlayerAnimator : MonoBehaviour
     private static readonly int DeadHash =
         Animator.StringToHash("Dead");
 
+    private bool CanUseAnimator =>
+        animator != null &&
+        animator.isActiveAndEnabled &&
+        animator.runtimeAnimatorController != null;
+
     private void OnEnable()
     {
         if (controller == null)
@@ -68,11 +73,9 @@ public sealed class PlayerAnimator : MonoBehaviour
 
     private void Update()
     {
-        if (
-            controller == null ||
-            animator == null ||
-            visual == null
-        )
+        if (controller == null ||
+            visual == null ||
+            !CanUseAnimator)
         {
             return;
         }
@@ -83,6 +86,11 @@ public sealed class PlayerAnimator : MonoBehaviour
 
     private void UpdateAnimatorParameters()
     {
+        if (!CanUseAnimator)
+        {
+            return;
+        }
+
         animator.SetFloat(
             SpeedHash,
             controller.CurrentSpeedNormalized,
@@ -108,6 +116,11 @@ public sealed class PlayerAnimator : MonoBehaviour
 
     private void UpdateFacingDirection()
     {
+        if (!CanUseAnimator)
+        {
+            return;
+        }
+
         float targetY = controller.FacingDirection > 0f
             ? rightFacingY
             : leftFacingY;
@@ -126,31 +139,49 @@ public sealed class PlayerAnimator : MonoBehaviour
 
     private void HandleJump()
     {
-        animator.SetTrigger(JumpHash);
+        if (CanUseAnimator)
+        {
+            animator.SetTrigger(JumpHash);
+        }
     }
 
     private void HandleDoubleJump()
     {
-        animator.SetTrigger(DoubleJumpHash);
+        if (CanUseAnimator)
+        {
+            animator.SetTrigger(DoubleJumpHash);
+        }
     }
 
     private void HandleDash()
     {
-        animator.SetTrigger(DashHash);
+        if (CanUseAnimator)
+        {
+            animator.SetTrigger(DashHash);
+        }
     }
 
     public void PlayShoot()
     {
-        animator.SetTrigger(ShootHash);
+        if (CanUseAnimator)
+        {
+            animator.SetTrigger(ShootHash);
+        }
     }
 
     public void PlayHurt()
     {
-        animator.SetTrigger(HurtHash);
+        if (CanUseAnimator)
+        {
+            animator.SetTrigger(HurtHash);
+        }
     }
 
     public void SetDead(bool value)
     {
-        animator.SetBool(DeadHash, value);
+        if (CanUseAnimator)
+        {
+            animator.SetBool(DeadHash, value);
+        }
     }
 }
