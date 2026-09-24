@@ -719,7 +719,7 @@ Transform:
   m_GameObject: {fileID: 217704955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5818062, y: 1.5595696, z: -12}
+  m_LocalPosition: {x: 3.5972302, y: 1.5595696, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1063,7 +1063,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5818062, y: 1.5595696, z: -12}
+  m_LocalPosition: {x: 3.5972302, y: 1.5595696, z: -12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2540,37 +2540,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 661608581}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &959158083
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 959158084}
-  m_Layer: 9
-  m_Name: AttackPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &959158084
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 959158083}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1913063776}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1021965540
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,37 +2717,6 @@ Transform:
   - {fileID: 589699026}
   m_Father: {fileID: 1911129667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1168914681
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1168914682}
-  m_Layer: 10
-  m_Name: AttackPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1168914682
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1168914681}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0.8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1247683295}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1188842656 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cce18e617c1171c418f8070584a48db0,
@@ -2906,7 +2844,6 @@ GameObject:
   - component: {fileID: 1247683301}
   - component: {fileID: 1247683300}
   - component: {fileID: 1247683299}
-  - component: {fileID: 1247683303}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Enemy
@@ -2928,7 +2865,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 408613809}
-  - {fileID: 1168914682}
   - {fileID: 121892137}
   - {fileID: 2117442674}
   m_Father: {fileID: 1990409557}
@@ -3091,28 +3027,6 @@ MonoBehaviour:
   bodyCollider: {fileID: 1247683297}
   disableColliderOnDeath: 1
   destroyDelay: 2
---- !u!114 &1247683303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1247683294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97045f608a8ed0d4ea8cf5887ce48a85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actor: {fileID: 1247683302}
-  attackPoint: {fileID: 1168914682}
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 512
-  attackRadius: 1.1
-  damage: 15
-  hitDelay: 0.35
-  attackDuration: 0.8
-  cooldown: 1.2
 --- !u!1 &1259145332
 GameObject:
   m_ObjectHideFlags: 0
@@ -3995,7 +3909,6 @@ Transform:
   m_Children:
   - {fileID: 1331780968}
   - {fileID: 1418105478}
-  - {fileID: 959158084}
   - {fileID: 1700033759}
   m_Father: {fileID: 794322963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
