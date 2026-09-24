@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8140873736976258330}
   - component: {fileID: 4988735895486649803}
   - component: {fileID: 3598305894898777351}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PFB_PlayerProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitMask:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 1280
 --- !u!33 &4988735895486649803
 MeshFilter:
   m_ObjectHideFlags: 0

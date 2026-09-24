@@ -85,7 +85,7 @@ public sealed class PlayerAnimator : MonoBehaviour
     {
         animator.SetFloat(
             SpeedHash,
-            controller.MoveAmount,
+            controller.CurrentSpeedNormalized,
             0.1f,
             Time.deltaTime
         );

@@ -227,6 +227,11 @@ public sealed class WeaponController : MonoBehaviour
         Projectile projectile =
             projectilePool.Get();
 
+        if (projectile == null)
+        {
+            return;
+        }
+
         projectile.Launch(
             playerController.transform,
             firePoint.position,
