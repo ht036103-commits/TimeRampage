@@ -47,8 +47,7 @@ public sealed class TargetDummy : MonoBehaviour
 
         yield return new WaitForSeconds(respawnDelay);
 
-        transform.position = transform.position;
-        health.ResetHealth();
+       health.ResetHealth();
 
         SetVisibleAndCollidable(true);
         respawnRoutine = null;

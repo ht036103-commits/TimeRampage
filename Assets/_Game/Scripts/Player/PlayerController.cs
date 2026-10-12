@@ -216,6 +216,8 @@ public sealed class PlayerController : MonoBehaviour
 
         velocity.z = 0f;
         body.velocity = velocity;
+
+       
     }
 
     private void TryPerformJump()

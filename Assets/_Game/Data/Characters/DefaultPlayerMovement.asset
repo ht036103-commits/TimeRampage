@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: DefaultPlayerMovement
   m_EditorClassIdentifier: 
   maxRunSpeed: 7
-  groundAcceleration: 40
-  groundDeceleration: 55
-  airAcceleration: 30
-  airDeceleration: 18
+  groundAcceleration: 75
+  groundDeceleration: 90
+  airAcceleration: 45
+  airDeceleration: 20
   jumpHeight: 2.6
   doubleJumpHeight: 2.3
   extraAirJumps: 1
-  upwardGravity: 42
+  upwardGravity: 50
   fallingGravity: 60
-  jumpCutGravityMultiplier: 2.3
+  jumpCutGravityMultiplier: 2
   apexVelocityThreshold: 1.2
   apexGravityMultiplier: 0.55
   maximumFallSpeed: 25
