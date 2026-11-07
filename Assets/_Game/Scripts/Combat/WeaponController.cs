@@ -13,7 +13,7 @@ public sealed class WeaponController : MonoBehaviour
     [SerializeField] private Transform weaponPivot;
     [SerializeField] private Transform firePoint;
     [SerializeField] private Camera gameCamera;
-
+    
     private GameInputActions inputActions;
 
     private Vector3 aimDirection = Vector3.right;
