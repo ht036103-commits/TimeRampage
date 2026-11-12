@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191da26da2d080f4fbb8b54486730d13, type: 3}
   m_Name: DefaultPlayerWeapon
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 50
   shotsPerSecond: 6
   projectileSpeed: 28
   projectileLifetime: 2
   scatterProjectileCount: 3
   scatterStepAngle: 12
-  scatterDuration: 10

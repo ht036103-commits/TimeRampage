@@ -25,7 +25,7 @@ public sealed class KnightAI : MonoBehaviour
     [SerializeField] private float loseTargetRange = 12f;
 
     [Header("Attack")]
-    [SerializeField] private int attackDamage = 15;
+    [SerializeField] private int attackDamage = 50;
     [SerializeField] private float attackRange = 1.4f;
     [SerializeField] private float attackHeight = 0.3f;
     [SerializeField] private float attackRadius = 0.75f;
