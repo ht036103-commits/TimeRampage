@@ -407,7 +407,7 @@ Transform:
   m_GameObject: {fileID: 217704955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5803237, y: -14.300307, z: -12.429043}
+  m_LocalPosition: {x: 3.5782537, y: -14.300307, z: -12.429043}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -757,7 +757,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5803237, y: -14.300307, z: -12.429043}
+  m_LocalPosition: {x: 3.5782537, y: -14.300307, z: -12.429043}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1756,6 +1756,12 @@ MeshFilter:
 --- !u!4 &900058253 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4135029336997618632, guid: f36b0ffefd960e24485e186f679a2dd0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7217998049025661370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &925606067 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4634694225879492567, guid: f36b0ffefd960e24485e186f679a2dd0,
     type: 3}
   m_PrefabInstance: {fileID: 7217998049025661370}
   m_PrefabAsset: {fileID: 0}
@@ -3881,6 +3887,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6954490884176702257, guid: 213ef449480104e4d884e8818d70163c,
         type: 3}
+      propertyPath: firePoint
+      value: 
+      objectReference: {fileID: 925606067}
+    - target: {fileID: 6954490884176702257, guid: 213ef449480104e4d884e8818d70163c,
+        type: 3}
       propertyPath: gameCamera
       value: 
       objectReference: {fileID: 330585545}
@@ -3895,7 +3906,8 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6072273692046523121, guid: 213ef449480104e4d884e8818d70163c, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1334173537777992627, guid: 213ef449480104e4d884e8818d70163c,
         type: 3}
