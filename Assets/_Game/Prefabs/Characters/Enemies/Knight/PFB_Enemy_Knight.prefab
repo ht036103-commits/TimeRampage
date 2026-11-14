@@ -2037,7 +2037,7 @@ MonoBehaviour:
   verticalTolerance: 2.5
   detectionRange: 10
   loseTargetRange: 15
-  attackDamage: 15
+  attackDamage: 30
   attackRange: 1.7
   attackHeight: 0.3
   attackRadius: 0.75
