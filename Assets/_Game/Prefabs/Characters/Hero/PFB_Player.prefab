@@ -1694,4 +1694,5 @@ MonoBehaviour:
   playerAnimator: {fileID: 2165254713522839227}
   body: {fileID: 460491659089015851}
   respawnPoint: {fileID: 0}
+  respawnAfterDeath: 0
   respawnDelay: 2

@@ -233,7 +233,7 @@ public sealed class KnightAI : MonoBehaviour
             transform.position +
             Vector3.right *
             motor.FacingDirection *
-            attackRange +
+            (attackRange * 0.5f) +
             Vector3.up *
             attackHeight;
 
@@ -331,7 +331,7 @@ public sealed class KnightAI : MonoBehaviour
             transform.position +
             Vector3.right *
             facing *
-            attackRange +
+            (attackRange * 0.5f) +
             Vector3.up *
             attackHeight;
 

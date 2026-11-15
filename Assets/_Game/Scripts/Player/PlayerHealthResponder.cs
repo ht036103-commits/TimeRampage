@@ -14,6 +14,7 @@ public sealed class PlayerHealthResponder :
     [SerializeField] private Transform respawnPoint;
 
     [Header("Respawn")]
+    [SerializeField] private bool respawnAfterDeath = true;
     [SerializeField] private float respawnDelay = 2f;
 
     private Vector3 initialPosition;
@@ -92,6 +93,11 @@ public sealed class PlayerHealthResponder :
         weaponController.enabled = false;
 
         body.velocity = Vector3.zero;
+
+        if (!respawnAfterDeath)
+        {
+            return;
+        }
 
         if (respawnRoutine == null)
         {

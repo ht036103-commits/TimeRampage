@@ -10,12 +10,15 @@ public class PauseMenuUI : MonoBehaviour
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private Button pauseButton;
 
+    [Header("Settings Menu References")]
+    [SerializeField] private GameObject settingsMenuPanel;
+
     private void Start()
     {
         // Dam bao game bat dau voi thoi gian binh thuong
         Time.timeScale = 1f;
 
-        // An Pause Menu khi bat dau man choi
+        // An cac menu khi bat dau man choi
         if (pauseMenuPanel != null)
         {
             pauseMenuPanel.SetActive(false);
@@ -23,6 +26,15 @@ public class PauseMenuUI : MonoBehaviour
         else
         {
             Debug.LogError("Pause Menu Panel chua duoc gan!");
+        }
+
+        if (settingsMenuPanel != null)
+        {
+            settingsMenuPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("Settings Menu Panel chua duoc gan!");
         }
     }
 
@@ -35,19 +47,54 @@ public class PauseMenuUI : MonoBehaviour
             return;
         }
 
+        if (settingsMenuPanel != null)
+        {
+            settingsMenuPanel.SetActive(false);
+        }
+
         pauseMenuPanel.SetActive(true);
 
-        // Tam dung thoi gian trong game
         Time.timeScale = 0f;
 
-        // Khong cho nhan nut Pause them lan nua
         if (pauseButton != null)
         {
             pauseButton.interactable = false;
         }
     }
 
-    // Dong Pause Menu va tiep tuc game
+    // Mo Settings Menu tu Pause Menu
+    public void OpenSettings()
+    {
+        if (pauseMenuPanel == null || settingsMenuPanel == null)
+        {
+            Debug.LogError("Pause Menu hoac Settings Menu chua duoc gan!");
+            return;
+        }
+
+        pauseMenuPanel.SetActive(false);
+        settingsMenuPanel.SetActive(true);
+
+        // Khong khoi phuc Time.timeScale.
+        // Game tiep tuc o trang thai tam dung.
+    }
+
+    // Quay tu Settings Menu ve Pause Menu
+    public void BackToPauseMenu()
+    {
+        if (pauseMenuPanel == null || settingsMenuPanel == null)
+        {
+            Debug.LogError("Pause Menu hoac Settings Menu chua duoc gan!");
+            return;
+        }
+
+        settingsMenuPanel.SetActive(false);
+        pauseMenuPanel.SetActive(true);
+
+        // Dam bao game van dang tam dung
+        Time.timeScale = 0f;
+    }
+
+    // Dong menu va tiep tuc game
     public void ResumeGame()
     {
         if (pauseMenuPanel != null)
@@ -55,7 +102,11 @@ public class PauseMenuUI : MonoBehaviour
             pauseMenuPanel.SetActive(false);
         }
 
-        // Khoi phuc thoi gian game
+        if (settingsMenuPanel != null)
+        {
+            settingsMenuPanel.SetActive(false);
+        }
+
         Time.timeScale = 1f;
 
         if (pauseButton != null)
@@ -67,11 +118,9 @@ public class PauseMenuUI : MonoBehaviour
     // Khoi dong lai man choi hien tai
     public void RestartGame()
     {
-        // Phai khoi phuc thoi gian truoc khi tai lai scene
         Time.timeScale = 1f;
 
         Scene currentScene = SceneManager.GetActiveScene();
-
         SceneManager.LoadScene(currentScene.buildIndex);
     }
 
