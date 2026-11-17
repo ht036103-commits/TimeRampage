@@ -159,6 +159,15 @@ public sealed class ArcherAI : MonoBehaviour
             Mathf.Sign(difference.x);
 
         motor.Face(directionToPlayer);
+        // Ưu tiên tấn công khi Player ở trong tầm bắn
+        if (
+            horizontalDistance <= maximumDistance &&
+            cooldownTimer <= 0f
+        )
+        {
+            BeginShooting();
+            return;
+        }
 
         if (horizontalDistance < minimumDistance)
         {
@@ -206,10 +215,6 @@ public sealed class ArcherAI : MonoBehaviour
         motor.Stop();
         actor.SetMovementSpeed(0f);
 
-        if (cooldownTimer <= 0f)
-        {
-            BeginShooting();
-        }
     }
 
     private void BeginShooting()

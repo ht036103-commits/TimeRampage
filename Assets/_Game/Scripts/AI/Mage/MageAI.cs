@@ -94,25 +94,19 @@ public sealed class MageAI : MonoBehaviour
 
         FaceTarget();
 
-        if (horizontalDistance > detectionRange ||
-            verticalDistance > verticalTolerance)
+        
+        if (horizontalDistance <= castRange &&
+            Time.time >= nextCastTime)
         {
-            ChangeState(MageState.Idle);
-            StopMoving();
+            BeginCasting();
             return;
         }
+
 
         if (horizontalDistance < retreatDistance)
         {
             ChangeState(MageState.Retreat);
             Move(-DirectionToTarget(), retreatSpeed);
-            return;
-        }
-
-        if (horizontalDistance <= castRange &&
-            Time.time >= nextCastTime)
-        {
-            BeginCasting();
             return;
         }
 

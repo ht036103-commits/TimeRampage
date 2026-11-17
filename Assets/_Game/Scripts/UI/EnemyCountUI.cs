@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -10,15 +11,21 @@ public class EnemyCountUI : MonoBehaviour
 
     private EnemyActor[] enemies;
     private int remainingEnemies;
+    private bool allEnemiesDefeatedNotified;
+
+    public int RemainingEnemies => remainingEnemies;
+
+    public bool AreAllEnemiesDefeated =>
+        remainingEnemies <= 0;
+
+    public event Action AllEnemiesDefeated;
 
     private void Awake()
     {
-        // Lấy các EnemyActor đang hoạt động trong Scene.
         enemies = FindObjectsOfType<EnemyActor>();
 
         remainingEnemies = 0;
 
-        // Đếm số Enemy còn sống.
         foreach (EnemyActor enemy in enemies)
         {
             if (enemy != null &&
@@ -35,7 +42,6 @@ public class EnemyCountUI : MonoBehaviour
         if (enemies == null)
             return;
 
-        // Đăng ký sự kiện khi Enemy bị tiêu diệt.
         foreach (EnemyActor enemy in enemies)
         {
             if (enemy != null && enemy.Health != null)
@@ -48,6 +54,7 @@ public class EnemyCountUI : MonoBehaviour
     private void Start()
     {
         UpdateEnemyCount();
+        NotifyIfAllEnemiesDefeated();
     }
 
     private void OnDisable()
@@ -55,7 +62,6 @@ public class EnemyCountUI : MonoBehaviour
         if (enemies == null)
             return;
 
-        // Hủy đăng ký sự kiện khi UI bị tắt.
         foreach (EnemyActor enemy in enemies)
         {
             if (enemy != null && enemy.Health != null)
@@ -73,6 +79,20 @@ public class EnemyCountUI : MonoBehaviour
         );
 
         UpdateEnemyCount();
+        NotifyIfAllEnemiesDefeated();
+    }
+
+    private void NotifyIfAllEnemiesDefeated()
+    {
+        if (remainingEnemies > 0 ||
+            allEnemiesDefeatedNotified)
+        {
+            return;
+        }
+
+        allEnemiesDefeatedNotified = true;
+
+        AllEnemiesDefeated?.Invoke();
     }
 
     private void UpdateEnemyCount()

@@ -128,6 +128,7 @@ public sealed class KnightAI : MonoBehaviour
         );
     }
 
+    
     private void UpdateChase()
     {
         if (!CanDetectPlayer(loseTargetRange))
@@ -148,20 +149,27 @@ public sealed class KnightAI : MonoBehaviour
         float verticalDistance =
             Mathf.Abs(playerDifference.y);
 
-        if (
-            horizontalDistance <= attackRange &&
-            verticalDistance <=
-                verticalTolerance &&
-            cooldownTimer <= 0f
-        )
-
-        {
-            BeginAttack();
-            return;
-        }
-
         float direction =
             Mathf.Sign(playerDifference.x);
+
+        if (
+            horizontalDistance <= attackRange &&
+            verticalDistance <= verticalTolerance
+        )
+        {
+           
+            motor.Face(direction);
+            motor.StopImmediately();
+
+            actor.SetMovementSpeed(0f);
+
+            if (cooldownTimer <= 0f)
+            {
+                BeginAttack();
+            }
+
+            return;
+        }
 
         bool groundAhead =
             sensors.HasGroundAhead(direction);
@@ -180,6 +188,7 @@ public sealed class KnightAI : MonoBehaviour
         motor.Move(direction, chaseSpeed);
         actor.SetMovementSpeed(1f);
     }
+
 
     private void BeginAttack()
     {
