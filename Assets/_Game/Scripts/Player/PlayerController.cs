@@ -39,6 +39,13 @@ public sealed class PlayerController : MonoBehaviour
             ? 0f
             : Mathf.Clamp01(Mathf.Abs(body.velocity.x) / config.maxRunSpeed);
     public float FacingDirection => facingDirection;
+    public void SetFacingDirectionFromAim(Vector3 direction)
+    {
+        if (Mathf.Abs(direction.x) > 0.1f)
+        {
+            facingDirection = Mathf.Sign(direction.x);
+        }
+    }
     public float VerticalSpeed => body == null ? 0f : body.velocity.y;
     public event Action Jumped;
     public event Action DoubleJumped;
@@ -104,7 +111,17 @@ public sealed class PlayerController : MonoBehaviour
     {
         if (IsDashing)
         {
+            // Neu nhan Jump va con quyen nhay,
+            // huy Dash de thuc hien Jump ngay.
+            if (TryPerformJump())
+            {
+                dashTimer = 0f;
+                ApplyCustomGravity();
+                return;
+            }
+
             PerformDash();
+            ApplyCustomGravity();
             return;
         }
 
@@ -220,14 +237,14 @@ public sealed class PlayerController : MonoBehaviour
        
     }
 
-    private void TryPerformJump()
+    private bool TryPerformJump()
     {
         if (jumpBufferTimer <= 0f)
         {
-            return;
+            return false;
         }
 
-        // Nhảy lần đầu hoặc coyote jump.
+        // Jump lan dau hoac coyote jump.
         if (coyoteTimer > 0f)
         {
             PerformJump(config.jumpHeight);
@@ -235,7 +252,8 @@ public sealed class PlayerController : MonoBehaviour
 
             coyoteTimer = 0f;
             jumpBufferTimer = 0f;
-            return;
+
+            return true;
         }
 
         // Double jump.
@@ -247,7 +265,11 @@ public sealed class PlayerController : MonoBehaviour
             DoubleJumped?.Invoke();
 
             jumpBufferTimer = 0f;
+
+            return true;
         }
+
+        return false;
     }
 
     private void PerformJump(float height)
@@ -341,19 +363,45 @@ public sealed class PlayerController : MonoBehaviour
         DashStarted?.Invoke();
     }
 
-    private void PerformDash()
+   private void PerformDash()
     {
         dashTimer = Mathf.Max(
             0f,
             dashTimer - Time.fixedDeltaTime
         );
 
-        body.velocity = new Vector3(
-            facingDirection * config.dashSpeed,
-            0f,
-            0f
-        );
+        Vector3 velocity = body.velocity;
+
+        velocity.x = facingDirection * config.dashSpeed;
+        velocity.z = 0f;
+
+        body.velocity = velocity;
     }
+
+    public void ResetState()
+    {
+        // Reset trang thai Dash.
+        dashTimer = 0f;
+        dashCooldownTimer = 0f;
+
+        // Reset trang thai Jump.
+        jumpBufferTimer = 0f;
+        coyoteTimer = 0f;
+        jumpHeld = false;
+
+        // Reset input di chuyen.
+        moveInput = 0f;
+
+        // Reset trang thai di chuyen tren khong.
+        isGrounded = false;
+        remainingAirJumps = config.extraAirJumps;
+        remainingAirDashes = config.airDashes;
+
+        // Xoa van toc con lai.
+        body.velocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
+    }
+
 
     private void OnDrawGizmosSelected()
     {

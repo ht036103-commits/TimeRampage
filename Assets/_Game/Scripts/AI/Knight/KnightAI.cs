@@ -27,6 +27,7 @@ public sealed class KnightAI : MonoBehaviour
     [Header("Attack")]
     [SerializeField] private int attackDamage = 50;
     [SerializeField] private float attackRange = 1.4f;
+    [SerializeField] private float attackVerticalTolerance = 1f;
     [SerializeField] private float attackHeight = 0.3f;
     [SerializeField] private float attackRadius = 0.75f;
     [SerializeField] private float attackWindup = 0.3f;
@@ -41,12 +42,48 @@ public sealed class KnightAI : MonoBehaviour
     private float cooldownTimer;
     private float attackTimer;
     private bool attackDamageApplied;
+    private AnimationEventRelay animationEventRelay;
 
     private void Awake()
     {
         actor ??= GetComponent<EnemyActor>();
         motor ??= GetComponent<GroundEnemyMotor>();
         sensors ??= GetComponent<EnemySensors>();
+
+        Animator knightAnimator =
+            GetComponentInChildren<Animator>(true);
+
+        if (knightAnimator != null)
+        {
+            animationEventRelay =
+                knightAnimator.GetComponent<AnimationEventRelay>();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (animationEventRelay != null)
+        {
+            animationEventRelay.AttackHit += HandleAttackHit;
+        }
+
+        if (actor != null)
+        {
+            actor.Damaged += HandleDamaged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (animationEventRelay != null)
+        {
+            animationEventRelay.AttackHit -= HandleAttackHit;
+        }
+
+        if (actor != null)
+        {
+            actor.Damaged -= HandleDamaged;
+        }
     }
 
     private void Start()
@@ -154,7 +191,7 @@ public sealed class KnightAI : MonoBehaviour
 
         if (
             horizontalDistance <= attackRange &&
-            verticalDistance <= verticalTolerance
+            verticalDistance <= attackVerticalTolerance
         )
         {
            
@@ -184,9 +221,37 @@ public sealed class KnightAI : MonoBehaviour
             actor.SetMovementSpeed(0f);
             return;
         }
-
+  
+        motor.Face(direction);
         motor.Move(direction, chaseSpeed);
         actor.SetMovementSpeed(1f);
+
+    }
+
+    private void HandleDamaged()
+    {
+        // Chi huy don tan cong neu Knight dang Attack.
+        if (state != KnightState.Attack)
+        {
+            return;
+        }
+
+        // Huy don tan cong hien tai.
+        state = KnightState.Chase;
+
+        // Xoa bo dem thoi gian tan cong.
+        attackTimer = 0f;
+
+        // Xoa co gay sat thuong.
+        attackDamageApplied = false;
+
+        // Cho Knight nghi truoc khi tan cong lai.
+        cooldownTimer = attackCooldown;
+
+        // Dung chuyen dong.
+        motor.StopImmediately();
+
+        actor.SetMovementSpeed(0f);
     }
 
 
@@ -216,6 +281,7 @@ public sealed class KnightAI : MonoBehaviour
 
         attackTimer += Time.deltaTime;
 
+        // Phuong an du phong neu Animation Event khong duoc goi.
         if (
             !attackDamageApplied &&
             attackTimer >= attackWindup
@@ -234,6 +300,24 @@ public sealed class KnightAI : MonoBehaviour
             cooldownTimer = attackCooldown;
             state = KnightState.Chase;
         }
+    }
+
+    private void HandleAttackHit()
+    {
+        // Chi nhan event khi Knight dang trong trang thai Attack.
+        if (state != KnightState.Attack)
+        {
+            return;
+        }
+
+        // Khong cho phep gay sat thuong hai lan.
+        if (attackDamageApplied)
+        {
+            return;
+        }
+
+        ApplyAttackDamage();
+        attackDamageApplied = true;
     }
 
     private void ApplyAttackDamage()
@@ -280,9 +364,7 @@ public sealed class KnightAI : MonoBehaviour
         }
     }
 
-    private bool CanDetectPlayer(
-        float range
-    )
+    private bool CanDetectPlayer(float range)
     {
         if (player == null)
         {
@@ -295,8 +377,7 @@ public sealed class KnightAI : MonoBehaviour
 
         if (
             Mathf.Abs(difference.x) > range ||
-            Mathf.Abs(difference.y) >
-            verticalTolerance
+            Mathf.Abs(difference.y) > verticalTolerance
         )
         {
             return false;

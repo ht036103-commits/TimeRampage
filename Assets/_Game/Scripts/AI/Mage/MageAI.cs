@@ -87,20 +87,41 @@ public sealed class MageAI : MonoBehaviour
             return;
         }
 
+        
         float horizontalDistance =
             Mathf.Abs(target.position.x - transform.position.x);
+
         float verticalDistance =
             Mathf.Abs(target.position.y - transform.position.y);
 
         FaceTarget();
 
-        
+        // Khong tiep tuc truy duoi neu Player nam ngoai pham vi phat hien.
+        if (horizontalDistance > detectionRange ||
+            verticalDistance > verticalTolerance)
+        {
+            ChangeState(MageState.Idle);
+            StopMoving();
+            return;
+        }
+
+        // Kiem tra vat can giua Mage va Player.
+        bool inView = !Physics.Linecast(
+            magicSpawnPoint.position,
+            target.position + Vector3.up,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        // Chi tan cong khi nam trong tam va khong bi vat can.
         if (horizontalDistance <= castRange &&
-            Time.time >= nextCastTime)
+            Time.time >= nextCastTime &&
+            inView)
         {
             BeginCasting();
             return;
         }
+
 
 
         if (horizontalDistance < retreatDistance)

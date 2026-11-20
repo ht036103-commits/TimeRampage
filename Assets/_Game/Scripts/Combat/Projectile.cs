@@ -38,13 +38,17 @@ public sealed class Projectile : MonoBehaviour
         releaseAction = onRelease;
         isLaunched = true;
 
+        
+        float angle = Mathf.Atan2(
+            direction.y,
+            direction.x
+        ) * Mathf.Rad2Deg;
+
         transform.SetPositionAndRotation(
             position,
-            Quaternion.LookRotation(
-                Vector3.forward,
-                direction
-            )
+            Quaternion.Euler(0f, 0f, angle)
         );
+
 
         body.velocity =
             direction.normalized * speed;

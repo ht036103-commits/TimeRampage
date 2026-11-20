@@ -119,17 +119,23 @@ public sealed class PlayerHealthResponder :
                 ? respawnPoint.position
                 : initialPosition;
 
+        
         body.position = targetPosition;
-        body.velocity = Vector3.zero;
-        body.angularVelocity = Vector3.zero;
 
+        // Dat lai toan bo trang thai PlayerController.
+        playerController.ResetState();
+
+        // Khoi phuc mau.
         health.ResetHealth();
 
+        // Khoi phuc animation.
         playerAnimator?.SetDead(false);
 
+        // Bat lai cac component.
         playerController.enabled = true;
         weaponController.enabled = true;
 
         respawnRoutine = null;
+
     }
 }

@@ -1193,6 +1193,7 @@ GameObject:
   m_Component:
   - component: {fileID: -8679921383154817045}
   - component: {fileID: 5866666021909216657}
+  - component: {fileID: 3229574736542155538}
   m_Layer: 10
   m_Name: Knight_Model
   m_TagString: Untagged
@@ -1238,6 +1239,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3229574736542155538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149155446097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b4eac100801d44b936d67db5003730, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1082271958561512970
 GameObject:
   m_ObjectHideFlags: 0
@@ -2039,9 +2052,10 @@ MonoBehaviour:
   loseTargetRange: 15
   attackDamage: 30
   attackRange: 1.7
+  attackVerticalTolerance: 1
   attackHeight: 0.3
   attackRadius: 0.75
-  attackWindup: 0.3
+  attackWindup: 0.5
   attackRecovery: 0.55
   attackCooldown: 1.1
   playerMask:

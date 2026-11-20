@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Health))]
@@ -16,6 +17,7 @@ public class EnemyActor : MonoBehaviour
     public Health Health => health;
     public bool IsDead => health != null && health.IsDead;
     public Animator Animator => animator;
+    public event Action Damaged;
 
     private static readonly int HurtHash =
         Animator.StringToHash("Hurt");
@@ -124,14 +126,25 @@ public class EnemyActor : MonoBehaviour
 
     private void HandleDamaged(int amount)
     {
-        if (!CanUseAnimator || IsDead)
+        if (IsDead)
         {
             return;
         }
 
+        // Thong bao KnightAI huy don tan cong hien tai.
+        Damaged?.Invoke();
+
+        if (!CanUseAnimator)
+        {
+            return;
+        }
+
+        // Xoa Attack trigger neu dang cho xu ly.
+        animator.ResetTrigger("Attack");
+
+        // Phat animation Hurt.
         animator.SetTrigger(HurtHash);
     }
-
     private void HandleDied()
     {
         if (CanUseAnimator)
