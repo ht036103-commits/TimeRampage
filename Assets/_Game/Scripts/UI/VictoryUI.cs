@@ -18,6 +18,7 @@ public class VictoryUI : MonoBehaviour
 
     [Header("Buttons")]
     [SerializeField] private Button pauseButton;
+    [SerializeField] private Button nextLevelButton;
 
     private bool playerReachedExit;
     private bool victoryShown;
@@ -100,6 +101,7 @@ public class VictoryUI : MonoBehaviour
 
     private void TryShowVictory()
     {
+
         if (victoryShown ||
             !playerReachedExit ||
             enemyCountUI == null ||
@@ -141,6 +143,17 @@ public class VictoryUI : MonoBehaviour
             victoryPanel.SetActive(true);
         }
 
+        if (nextLevelButton != null)
+        {
+            int nextBuildIndex =
+                SceneManager.GetActiveScene().buildIndex + 1;
+
+            bool hasNextLevel =
+                nextBuildIndex < SceneManager.sceneCountInBuildSettings;
+
+            nextLevelButton.gameObject.SetActive(hasNextLevel);
+        }
+
         Time.timeScale = 0f;
     }
 
@@ -161,5 +174,26 @@ public class VictoryUI : MonoBehaviour
         Time.timeScale = 1f;
 
         Application.Quit();
+    }
+
+    public void LoadNextLevel()
+    {
+        int nextBuildIndex =
+            SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (nextBuildIndex >= SceneManager.sceneCountInBuildSettings)
+        {
+            Debug.LogWarning(
+                "Ban da hoan thanh tat ca cac man choi.",
+                this
+            );
+
+            return;
+        }
+
+        // Khoi phuc thoi gian truoc khi chuyen scene.
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(nextBuildIndex);
     }
 }

@@ -18,15 +18,13 @@ public class LevelExitTrigger : MonoBehaviour
         boxCollider.isTrigger = true;
     }
 
+    
     private void OnTriggerEnter(Collider other)
     {
         if (playerAlreadyReached)
             return;
 
-        Transform playerRoot =
-            other.transform.root;
-
-        if (!playerRoot.CompareTag("Player"))
+        if (!other.CompareTag("Player"))
             return;
 
         if (victoryUI == null)
@@ -43,4 +41,5 @@ public class LevelExitTrigger : MonoBehaviour
 
         victoryUI.PlayerReachedExit();
     }
+
 }
